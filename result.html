@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Classification Results</title>
+</head>
+<body>
+    <h2>Model Accuracy: {{ accuracy }}</h2>
+    <h3>Classification Report</h3>
+    <pre>
+{% for label, metrics in report.items() %}
+{{ label }}:
+  precision: {{ metrics['precision'] }}
+  recall: {{ metrics['recall'] }}
+  f1-score: {{ metrics['f1-score'] }}
+  support: {{ metrics['support'] }}
+{% endfor %}
+    </pre>
+</body>
+</html>

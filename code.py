@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report, accuracy_score
+from sklearn.neural_network import MLPClassifier
+from sklearn.utils.class_weight import compute_class_weight
+
+# 1. Load the dataset
+# Replace with your actual CSV path
+df = pd.read_csv("song_data.csv")
+
+# 2. Preprocessing
+# Assume 'popularity' is the binary target (0 = unpopular, 1 = popular)
+X = df.drop("popularity", axis=1)
+y = df["popularity"]
+
+# 3. Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 4. Standardize features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# 5. Compute class weights
+classes = np.unique(y_train)
+class_weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train)
+class_weight_dict = dict(zip(classes, class_weights))
+
+# 6. Build and train the model
+model = MLPClassifier(hidden_layer_sizes=(64, 32), 
+                      activation='relu', 
+                      solver='adam', 
+                      max_iter=300, 
+                      class_weight=class_weight_dict,
+                      random_state=42)
+
+model.fit(X_train, y_train)
+
+# 7. Predictions
+y_pred = model.predict(X_test)
+
+# 8. Evaluation
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
